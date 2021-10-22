@@ -43,14 +43,16 @@ export default function App() {
 				dataLength={rats.length}
 				next={moreRats}
 				hasMore={hasMore}
-                height={'600px'}
+				height={"600px"}
 				loader={<h4>Loading...</h4>}
 				endMessage={
 					<p style={{ textAlign: "center" }}>
 						<b>Yay! You have seen it all</b>
 					</p>
 				}
-				refreshFunction={() => {window.location.reload()}}
+				refreshFunction={() => {
+					window.location.reload();
+				}}
 				pullDownToRefresh
 				pullDownToRefreshThreshold={50}
 				pullDownToRefreshContent={
