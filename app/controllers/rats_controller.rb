@@ -1,2 +1,0 @@
-class RatsController < ApplicationController
-end
