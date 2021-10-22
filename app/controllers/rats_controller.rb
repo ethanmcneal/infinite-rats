@@ -1,0 +1,2 @@
+class RatsController < ApplicationController
+end
