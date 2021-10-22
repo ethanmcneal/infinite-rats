@@ -25,7 +25,8 @@ const styles = {
         borderRadius: '8px',
         padding: '20px',
         margin: '10px',
-        backgroundColor: '#222'
+        backgroundColor: '#222',
+        height: '350px'
     },
     ratImage: {
         borderRadius: '11px',

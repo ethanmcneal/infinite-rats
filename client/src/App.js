@@ -1,69 +1,84 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios'
-import InfiniteScroll from 'react-infinite-scroll-component';
-import RatCard from './components/RatCard';
-import './App.css'
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import InfiniteScroll from "react-infinite-scroll-component";
+import RatCard from "./components/RatCard";
+import "./App.css";
 
+export default function App() {
+	const [rats, setRats] = useState([]);
+	const [page, setPage] = useState(2);
+	const [hasMore, setHasMore] = useState(true);
+	const [count, setCount] = useState(0);
 
-export default function App () {
-    const [rats, setRats] = useState([])
-    const [page, setPage] = useState(2)
+	useEffect(() => {
+		getInitialRats();
+	}, []);
 
-    useEffect(() => {
-        getInitialRats()
-    },[])
+	const getInitialRats = async () => {
+		try {
+			let res = await axios.get("/api/rats");
+			setRats(res.data.rats);
+			setCount(res.data.count);
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
-    const getInitialRats = async() => {
-        try {
-            let res = await axios.get('/api/rats?per=10')
-            setRats(res.data)
-        } catch (e) {
-            console.error(e)
-        }
-    }
+	const moreRats = async () => {
+		try {
+			let res = await axios.get(`/api/rats?page=${page}`);
+			setRats((prevState) => [...prevState, ...res.data.rats]);
+			rats.length < count
+				? setPage((page) => page + 1)
+				: setHasMore(false);
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
-    const moreRat = async() => {
-        console.log('loading more...')
-        try {
-            let res = await axios.get(`/api/rats?page=${page}&per=10`)
-            setRats(prevState => [...prevState, ...res.data])
-            setPage(page => page + 1)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-   return( 
-    <div style={styles.ratContainer}>
-        <h1>Rats</h1>
-
-        <InfiniteScroll
-        dataLength={rats.length} //This is important field to render the next data
-        next={moreRat}
-        hasMore={true}
-        loader={<h4>Loading...</h4>}
-        endMessage={
-          <p style={{ textAlign: 'center' }}>
-            <b>Yay! You have seen it all</b>
-          </p>
-        }
-      
-        >
-        {rats.map(rat => {
-            return <RatCard rat={rat} key={rat.id}/>
-        })}
-        </InfiniteScroll>
-    </div>)
-
+	return (
+		<div style={styles.ratContainer}>
+			<h1>Rats !!</h1>
+			<InfiniteScroll
+				dataLength={rats.length}
+				next={moreRats}
+				hasMore={hasMore}
+                height={'600px'}
+				loader={<h4>Loading...</h4>}
+				endMessage={
+					<p style={{ textAlign: "center" }}>
+						<b>Yay! You have seen it all</b>
+					</p>
+				}
+				refreshFunction={() => {window.location.reload()}}
+				pullDownToRefresh
+				pullDownToRefreshThreshold={50}
+				pullDownToRefreshContent={
+					<h3 style={{ textAlign: "center" }}>
+						&#8595; Pull down to refresh
+					</h3>
+				}
+				releaseToRefreshContent={
+					<h3 style={{ textAlign: "center" }}>
+						&#8593; Release to refresh
+					</h3>
+				}
+			>
+				{rats.map((rat) => {
+					return <RatCard key={rat.id} rat={rat} />;
+				})}
+			</InfiniteScroll>
+		</div>
+	);
 }
 
 const styles = {
-    ratContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#444'
-    }
-}
-    
+	ratContainer: {
+		display: "flex",
+		flexDirection: "column",
+		justifyContent: "center",
+		alignItems: "center",
+		backgroundColor: "#444",
+		minHeight: "100vh",
+	},
+};
