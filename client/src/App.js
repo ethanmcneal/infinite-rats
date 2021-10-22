@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios'
+import InfiniteScroll from 'react-infinite-scroll-component';
 import RatCard from './components/RatCard';
 import './App.css'
 
@@ -21,7 +22,8 @@ export default function App () {
         }
     }
 
-    const moreRat = async(page) => {
+    const moreRat = async() => {
+        console.log('loading more...')
         try {
             let res = await axios.get(`/api/rats?page=${page}&per=10`)
             setRats(prevState => [...prevState, ...res.data])
@@ -35,12 +37,22 @@ export default function App () {
     <div style={styles.ratContainer}>
         <h1>Rats</h1>
 
-        <div >
+        <InfiniteScroll
+        dataLength={rats.length} //This is important field to render the next data
+        next={moreRat}
+        hasMore={true}
+        loader={<h4>Loading...</h4>}
+        endMessage={
+          <p style={{ textAlign: 'center' }}>
+            <b>Yay! You have seen it all</b>
+          </p>
+        }
+      
+        >
         {rats.map(rat => {
             return <RatCard rat={rat} key={rat.id}/>
         })}
-        </div>
-        <button onClick={() => moreRat(page)}>More Rat!</button>
+        </InfiniteScroll>
     </div>)
 
 }
